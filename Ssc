@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSC Batch 27 Surprise</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ min-height:100vh;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ font-family:Arial,sans-serif;
+ color:white;
+ background:linear-gradient(120deg,#090020,#101c50,#46004f);
+ background-size:300% 300%;
+ animation:bg 8s infinite;
+ padding:15px;
+}
+@keyframes bg{
+ 0%{background-position:0% 50%}
+ 50%{background-position:100% 50%}
+ 100%{background-position:0% 50%}
+}
+.box{
+ width:100%;
+ max-width:650px;
+ text-align:center;
+ padding:25px;
+ border-radius:22px;
+ background:#080817dd;
+ box-shadow:0 0 35px #a000ff77;
+}
+h1{color:#ffe45c;text-shadow:0 0 15px #ff00ff}
+button{
+ padding:14px 28px;
+ margin:10px;
+ border:0;
+ border-radius:12px;
+ font-size:18px;
+ font-weight:bold;
+ cursor:pointer;
+ background:linear-gradient(90deg,#ffdd38,#ff65c5,#4deaff);
+ color:#111;
+}
+input{
+ padding:13px;
+ border-radius:10px;
+ border:0;
+ margin:8px;
+ max-width:100%;
+}
+video{
+ width:100%;
+ max-height:65vh;
+ border-radius:15px;
+ background:black;
+}
+.poster{
+ width:100%;
+ border-radius:15px;
+}
+.hidden{display:none!important}
+#setup{
+ text-align:left;
+ background:#ffffff12;
+ padding:15px;
+ border-radius:12px;
+ margin-bottom:20px;
+}
+#setup label{display:block;margin-top:12px}
+small{color:#bbb}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<!-- MEDIA SETUP -->
+<div id="setup">
+<h2>প্রথমে ফাইল নির্বাচন করুন</h2>
+
+<label>আপনার ভিডিও নির্বাচন করুন</label>
+<input type="file" id="videoFile" accept="video/*">
+
+<label>প্রথম অডিও নির্বাচন করুন</label>
+<input type="file" id="audioFile1" accept="audio/*">
+
+<label>দ্বিতীয় অডিও নির্বাচন করুন</label>
+<input type="file" id="audioFile2" accept="audio/*">
+
+<label>SSC Batch 27 ছবিটি নির্বাচন করুন</label>
+<input type="file" id="imageFile" accept="image/*">
+
+<br>
+<small>চারটি ফাইল নির্বাচন করার পর START চাপুন।</small>
+</div>
+
+<!-- START -->
+<div id="start" class="hidden">
+<h1>✨ SSC BATCH 27 ✨</h1>
+<p>আপনার জন্য একটি সারপ্রাইজ অপেক্ষা করছে!</p>
+<button onclick="show('password')">START</button>
+</div>
+
+<!-- PASSWORD -->
+<div id="password" class="hidden">
+<h1>🔐 PASSWORD</h1>
+<input id="pass" type="password" placeholder="Enter Password">
+<br>
+<button onclick="unlock()">UNLOCK</button>
+<p id="error"></p>
+</div>
+
+<!-- ALLOW -->
+<div id="allow" class="hidden">
+<h1>ARE YOU READY? 😎</h1>
+<p>Continue করতে Allow চাপুন।</p>
+<button onclick="startVideo()">ALLOW</button>
+</div>
+
+<!-- VIDEO -->
+<div id="videoScreen" class="hidden">
+<h1>🎬 VIDEO TIME</h1>
+<video id="video" controls playsinline></video>
+<p>ভিডিও শেষ হলে NEXT বাটন আসবে।</p>
+<button id="next" class="hidden" onclick="finalScreen()">NEXT ➜</button>
+</div>
+
+<!-- FINAL -->
+<div id="final" class="hidden">
+<img id="poster" class="poster">
+<h1>😂 SSC BATCH 27 😂</h1>
+<p id="status">অডিও চলছে...</p>
+<button onclick="playAudios()">PLAY AGAIN</button>
+</div>
+
+</div>
+
+<audio id="audio1"></audio>
+<audio id="audio2"></audio>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function show(id){
+ ["setup","start","password","allow","videoScreen","final"]
+ .forEach(x=>$(x).classList.add("hidden"));
+ $(id).classList.remove("hidden");
+}
+
+// File selection
+let videoURL, audioURL1, audioURL2, imageURL;
+
+$("videoFile").onchange = e => {
+ if(e.target.files[0])
+ videoURL=URL.createObjectURL(e.target.files[0]);
+};
+
+$("audioFile1").onchange = e => {
+ if(e.target.files[0])
+ audioURL1=URL.createObjectURL(e.target.files[0]);
+};
+
+$("audioFile2").onchange = e => {
+ if(e.target.files[0])
+ audioURL2=URL.createObjectURL(e.target.files[0]);
+};
+
+$("imageFile").onchange = e => {
+ if(e.target.files[0])
+ imageURL=URL.createObjectURL(e.target.files[0]);
+};
+
+// Setup complete
+$("setup").querySelector("small").textContent =
+"চারটি ফাইল নির্বাচন করার পর START চাপুন।";
+
+const checkFiles = () => {
+ if(!videoURL || !audioURL1 || !audioURL2 || !imageURL){
+ alert("সবগুলো ফাইল নির্বাচন করুন!");
+ return false;
+ }
+ return true;
+};
+
+const setupButton=document.createElement("button");
+setupButton.textContent="START WEBSITE";
+setupButton.onclick=()=>{
+ if(checkFiles()){
+ $("video").src=videoURL;
+ $("poster").src=imageURL;
+ $("audio1").src=audioURL1;
+ $("audio2").src=audioURL2;
+ show("start");
+ }
+};
+$("setup").appendChild(setupButton);
+
+// Password
+function unlock(){
+ if($("pass").value==="SK1"){
+ $("error").textContent="";
+ show("allow");
+ }else{
+ $("error").textContent="❌ ভুল পাসওয়ার্ড!";
+ }
+}
+
+// Start video
+async function startVideo(){
+ show("videoScreen");
+ $("next").classList.add("hidden");
+ $("video").currentTime=0;
+
+ try{
+ await $("video").play();
+ }catch(e){
+ alert("ভিডিও চালু করতে Play চাপুন।");
+ }
+}
+
+// Video ended
+$("video").addEventListener("ended",()=>{
+ $("next").classList.remove("hidden");
+});
+
+// Next
+function finalScreen(){
+ $("video").pause();
+ show("final");
+ playAudios();
+}
+
+// Play audio one after another
+async function playAudios(){
+ $("audio1").pause();
+ $("audio2").pause();
+ $("audio1").currentTime=0;
+ $("audio2").currentTime=0;
+
+ $("status").textContent="প্রথম অডিও চলছে...";
+
+ try{
+ await $("audio1").play();
+ }catch(e){
+ $("status").textContent="অডিও চালু করতে আবার PLAY চাপুন।";
+ return;
+ }
+}
+
+$("audio1").addEventListener("ended",async()=>{
+ $("status").textContent="দ্বিতীয় অডিও চলছে...";
+ try{
+ await $("audio2").play();
+ }catch(e){
+ $("status").textContent="দ্বিতীয় অডিও চালু করতে PLAY চাপুন।";
+ }
+});
+
+$("audio2").addEventListener("ended",()=>{
+ $("status").textContent="😂 PRANK COMPLETE 😂";
+});
+</script>
+
+</body>
+</html>
